@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rack the Rules</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;1,6..96,400&family=Archivo:wght@400;500;600&display=swap">
+<style>
+:root{
+--bg:#191C22;
+--panel:#1E222A;
+--panel-2:#22262F;
+--line:#333944;
+--line-soft:#262B33;
+--text:#E4E3DF;
+--soft:#9BA1AD;
+--dim:#6C7482;
+--champagne:#D8C9A8;
+--champagne-deep:#6E6349;
+--rose:#C89098;
+--rose-deep:#6E4B50;
+--wire:#4A505C;
+--btn-ink:#191C22;
+--s0:.79rem;
+--s1:.86rem;
+--s2:1.12rem;
+--s3:clamp(1.3rem,2.4vw,1.62rem);
+--s4:clamp(2rem,5.2vw,3.2rem);
+box-sizing:border-box;
+padding-top:env(safe-area-inset-top,0px);
+padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: light){
+:root:not([data-theme="dark"]){
+--bg:#F2F0EB; --panel:#FBFAF7; --panel-2:#F6F4EF;
+--line:#C8C4BA; --line-soft:#E4E1D9;
+--text:#1A1A19; --soft:#4A4A47; --dim:#83817A;
+--champagne:#7A6836; --champagne-deep:#B9AD8E;
+--rose:#8A5259; --rose-deep:#C4A4A8;
+--wire:#B6B2A8; --btn-ink:#FBFAF7;
+color-scheme:light;
+}
+}
+:root[data-theme="light"]{
+--bg:#F2F0EB; --panel:#FBFAF7; --panel-2:#F6F4EF;
+--line:#C8C4BA; --line-soft:#E4E1D9;
+--text:#1A1A19; --soft:#4A4A47; --dim:#83817A;
+--champagne:#7A6836; --champagne-deep:#B9AD8E;
+--rose:#8A5259; --rose-deep:#C4A4A8;
+--wire:#B6B2A8; --btn-ink:#FBFAF7;
+color-scheme:light;
+}
+:root[data-theme="dark"]{ color-scheme:dark; }
+*{box-sizing:border-box}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 12px)}
+body{
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+font-size:var(--s1);
+line-height:1.5;
+-webkit-font-smoothing:antialiased;
+}
+.sheet{max-width:880px;margin:0 auto;padding-inline:16px;padding-block:clamp(22px,4vw,44px)}
+.lbl{font-size:.59rem;letter-spacing:.2em;text-transform:uppercase;font-weight:500}
+.masthead{padding-bottom:16px;border-bottom:1px solid var(--line)}
+h1{
+font-family:"Bodoni Moda",Didot,"Times New Roman",serif;
+font-weight:400;font-size:var(--s4);line-height:1.02;
+letter-spacing:-.012em;margin:0;text-wrap:balance;
+}
+.deck{margin:12px 0 0;font-size:var(--s0);color:var(--soft);max-width:58ch}
+/* ---------- controls ---------- */
+.controls{margin-top:24px;display:flex;flex-direction:column;gap:14px}
+.mixer{display:flex;align-items:center;gap:clamp(10px,2.4vw,16px)}
+.mixer input[type=range]{
+flex:1;min-width:120px;height:26px;accent-color:var(--rose);cursor:pointer;
+}
+.read{
+margin:0;font-family:"Bodoni Moda",Didot,serif;
+font-size:var(--s2);line-height:1.1;color:var(--text);
+}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.roll{
+font-family:"Bodoni Moda",Didot,serif;font-size:1.08rem;font-weight:500;
+letter-spacing:.01em;padding:11px 26px;
+background:var(--champagne);color:var(--btn-ink);
+border:1px solid var(--champagne);cursor:pointer;
+}
+.roll:hover{background:var(--text);border-color:var(--text);color:var(--bg)}
+.codebox{display:flex;align-items:center;gap:8px;margin-left:auto}
+.codebox label{color:var(--dim)}
+.codebox input{
+font:inherit;font-size:var(--s0);letter-spacing:.14em;text-transform:uppercase;
+width:9em;padding:8px 10px;background:var(--panel);border:1px solid var(--line);color:var(--text);
+}
+.codebox input::placeholder{color:var(--dim);letter-spacing:.14em}
+.codemsg{font-size:.68rem;color:var(--rose);min-height:1.1em;margin:0}
+button:focus-visible, input:focus-visible{outline:2px solid var(--champagne);outline-offset:2px}
+/* ---------- the string ---------- */
+.stage{
+margin-top:clamp(22px,3.4vw,34px);
+border:1px solid var(--line);background:var(--panel);
+padding:clamp(24px,4vw,36px) clamp(14px,3vw,26px) clamp(20px,3vw,28px);
+}
+.string{display:flex;align-items:center;gap:clamp(8px,2vw,14px)}
+.end{flex:0 0 auto;font-weight:600;line-height:1}
+.end.w{color:var(--champagne)}
+.end.e{color:var(--rose)}
+.span{
+flex:1;position:relative;display:flex;align-items:center;
+justify-content:space-between;min-height:46px;
+}
+.span::before{
+content:"";position:absolute;left:0;right:0;top:50%;
+height:1px;background:var(--wire);
+}
+.cluster{display:flex;align-items:center;gap:2px;position:relative;z-index:1}
+.cluster.e{flex-direction:row-reverse}
+.bead{
+width:clamp(26px,6vw,32px);
+aspect-ratio:1;
+border-radius:50%;
+border:none;padding:0;cursor:pointer;position:relative;
+background-image:
+radial-gradient(circle at 33% 27%, rgba(255,255,255,.78), rgba(255,255,255,0) 44%),
+radial-gradient(circle at 68% 82%, rgba(0,0,0,.30), rgba(0,0,0,0) 52%);
+box-shadow:inset 0 -4px 9px rgba(0,0,0,.42), 0 1px 3px rgba(0,0,0,.34);
+}
+.bead.w{background-color:var(--champagne)}
+.bead.e{background-color:var(--rose)}
+.bead.pinned::after{
+content:"";position:absolute;inset:-4px;border-radius:50%;
+border:1px solid var(--text);
+}
+.bead.held::after{
+content:"";position:absolute;inset:-4px;border-radius:50%;
+border:1px dashed var(--dim);
+}
+.bead.slide{animation:slide .38s cubic-bezier(.18,.85,.3,1.05) both}
+.cluster.e .bead.slide{animation-name:slide-e}
+@keyframes slide{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes slide-e{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+.verdict{
+font-family:"Bodoni Moda",Didot,serif;
+font-size:var(--s3);line-height:1.24;font-weight:400;
+margin:26px 0 0;max-width:34ch;text-wrap:balance;
+}
+.tally{margin:10px 0 0;color:var(--dim);font-size:var(--s0)}
+.tally b{font-weight:500;color:var(--soft)}
+/* ---------- rules ---------- */
+.board{margin-top:22px;border:1px solid var(--line);background:var(--panel)}
+.rule{
+display:grid;grid-template-columns:34px minmax(96px,132px) 1fr;
+gap:0 14px;align-items:start;padding:13px 16px 13px 6px;
+border-bottom:1px solid var(--line-soft);
+}
+.rule:last-child{border-bottom:none}
+.rule.flash{background:var(--panel-2)}
+.pin{
+width:28px;height:28px;border:1px solid transparent;background:none;
+color:var(--dim);cursor:pointer;border-radius:50%;
+display:grid;place-items:center;font-size:.72rem;line-height:1;
+}
+.pin:hover{color:var(--text);border-color:var(--line)}
+.pin[aria-pressed="true"]{color:var(--champagne);border-color:var(--champagne-deep)}
+.pin[disabled]{opacity:.32;cursor:default}
+.rule h3{
+margin:3px 0 0;font-size:.655rem;letter-spacing:.09em;
+text-transform:uppercase;font-weight:500;color:var(--text);
+}
+.body{font-size:var(--s0);color:var(--soft);padding-top:2px}
+.body b{font-weight:600;color:var(--text)}
+.tag{font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;font-weight:600;margin-left:8px;white-space:nowrap}
+.tag.w{color:var(--champagne-deep)}
+.tag.e{color:var(--rose-deep)}
+.kid{margin-top:7px;padding-left:13px;border-left:1px solid var(--line);color:var(--dim);font-size:.72rem}
+.kid span{display:block}
+.kid span + span{margin-top:4px}
+.kid i{font-style:normal;color:var(--soft)}
+.held-note{margin:6px 0 0;color:var(--dim);font-size:.7rem;font-style:italic}
+/* ---------- spine ---------- */
+.spine{margin-top:22px;border:1px solid var(--line);background:var(--panel-2);padding:18px 18px 20px}
+.spine h2{font-family:"Bodoni Moda",Didot,serif;font-weight:500;font-size:var(--s2);margin:0 0 4px;color:var(--champagne)}
+.spine p.intro{margin:0 0 14px;font-size:var(--s0);color:var(--dim)}
+.spine dl{margin:0;display:flex;flex-direction:column;gap:9px}
+.spine dl > div{
+display:grid;grid-template-columns:minmax(92px,120px) 1fr;gap:14px;
+align-items:baseline;padding-bottom:9px;border-bottom:1px solid var(--line-soft);
+}
+.spine dl > div:last-child{border-bottom:none;padding-bottom:0}
+.spine dt{font-size:.59rem;letter-spacing:.13em;text-transform:uppercase;font-weight:500}
+.spine dd{margin:0;font-size:var(--s0);color:var(--soft)}
+footer{
+margin-top:24px;padding-top:14px;border-top:1px solid var(--line);
+display:flex;flex-wrap:wrap;gap:8px 26px;color:var(--dim);
+font-size:.59rem;letter-spacing:.14em;text-transform:uppercase;
+}
+footer a{color:var(--soft)}
+.print-only{display:none}
+@media (max-width:620px){
+.rule{grid-template-columns:30px 1fr;gap:0 10px;padding-right:14px}
+.rule h3{grid-column:2}
+.body{grid-column:2}
+.codebox{margin-left:0;width:100%}
+.codebox input{flex:1;width:auto}
+.spine dl > div{grid-template-columns:1fr;gap:3px}
+}
+@media (prefers-reduced-motion: reduce){ .bead.slide{animation:none} }
+@media print{
+:root{
+--bg:#fff;--panel:#fff;--panel-2:#fff;
+--line:#b8b8b8;--line-soft:#e2e2e2;
+--text:#111;--soft:#3a3a3a;--dim:#767676;
+--champagne:#7A6836;--champagne-deep:#b9ad8e;
+--rose:#8A5259;--rose-deep:#c4a4a8;--wire:#c9c9c9;
+}
+body{background:#fff;font-size:9pt}
+.sheet{padding:0;max-width:none}
+.controls,.tally,footer a,.pin{display:none !important}
+.stage{border:none;padding:0 0 8px}
+.verdict{margin-top:16px}
+.rule{grid-template-columns:minmax(96px,120px) 1fr;padding-left:0}
+.print-only{display:block;margin-top:8px}
+}
+</style>
+<div class="sheet">
+<header class="masthead">
+<h1>Rack the Rules</h1>
+<p class="deck">Seven rules are all that separate WPA 8-Ball from WEPF World Rules. Line them up, settle them, then break.</p>
+</header>
+<div class="controls">
+<div class="mixer">
+<span class="end lbl w">All WPA</span>
+<input type="range" id="blend" min="0" max="7" step="1" value="3" aria-label="How many rules come from WEPF">
+<span class="end lbl e">All WEPF</span>
+</div>
+<p class="read" id="blendread" role="status"></p>
+<div class="actions">
+<button type="button" class="roll" id="roll">Roll the frame</button>
+<div class="codebox">
+<label class="lbl" for="code">Frame</label>
+<input id="code" placeholder="FRAME-••••" spellcheck="false" autocomplete="off">
+</div>
+</div>
+<p class="codemsg" id="codemsg" role="status"></p>
+</div>
+<section class="stage">
+<div class="string">
+<span class="end lbl w">WPA</span>
+<div class="span">
+<div class="cluster w" id="clusterW"></div>
+<div class="cluster e" id="clusterE"></div>
+</div>
+<span class="end lbl e">WEPF</span>
+</div>
+<p class="verdict" id="verdict"></p>
+<p class="tally" id="tally"></p>
+<p class="print-only lbl" id="printcode"></p>
+</section>
+<section class="board" id="board" aria-label="The seven rolled rules"></section>
+<section class="spine">
+<h2>Fixed in both codes</h2>
+<p class="intro">The dice never touch these four.</p>
+<dl>
+<div><dt>The object</dt><dd>Clear your colour, then the black on a separate shot.</dd></div>
+<div><dt>Legal break</dt><dd>Pot a ball, or drive four object balls to cushions.</dd></div>
+<div><dt>Legal shot</dt><dd>Hit one of yours first, then pot a ball or send one to a cushion.</dd></div>
+<div><dt>Losing outright</dt><dd>The black too early, the black while fouling, or the black with your last colour.</dd></div>
+</dl>
+</section>
+<footer>
+<span>Summary for players &mdash; the published rulebooks govern</span>
+<span>Sources: <a href="https://wpapool.com/rules-of-play/" target="_blank" rel="noopener">WPA</a> &middot; <a href="https://www.wepf.org/" target="_blank" rel="noopener">WEPF</a></span>
+</footer>
+</div>
+<script>
+(function(){
+"use strict";
+// 0 = WPA, 1 = WEPF
+var DIALS = [
+{ id:"call", topic:"Calling",
+wpa:"Call the ball and the pocket. Banks, kisses and rails need no call.",
+wepf:"No calling. If it drops, it counts." },
+{ id:"foul", topic:"Fouls",
+wpa:"<b>Ball in hand</b>, anywhere on the table. A scratch is the same.",
+wepf:"<b>Two visits.</b> A visit is not a shot &mdash; the incoming player gets two of them. A scratch is the same." },
+{ id:"snooker", topic:"Snookers",
+wpa:"A snooker is just a snooker. No relief.",
+wepf:"Relief applies. <b>Total</b> &mdash; no path to any ball, so legal contact alone satisfies the shot. <b>Foul</b> and <b>foul jaw</b> &mdash; play on, or from baulk with a nominated ball." },
+{ id:"breakblack", topic:"Black on the break",
+wpa:"Spot the black and play on, or re-break. Breaker chooses.",
+wepf:"Re-rack. The same player breaks again." },
+{ id:"illegalbreak", topic:"Illegal break",
+wpa:"The incoming player takes the table as it lies, or re-racks and breaks.",
+wepf:"Re-rack. The opponent breaks, and carries the frame's foul penalty with it." },
+{ id:"offtable", topic:"Ball off the table",
+wpa:"Foul. The ball stays off.",
+wepf:"Foul. The ball is spotted." },
+{ id:"frozen", topic:"Frozen balls",
+wpa:"A legal ball frozen to the cue ball can be played straight into.",
+wepf:"Play away from any ball you are touching." }
+];
+var N = DIALS.length;
+function children(b){
+return {
+call:[
+{ k:"Open table", v: b[0]===0
+? "The first legal called ball sets your group."
+: "Groups are set by legal pots, and by nomination where the rules ask for it." },
+{ k:"The black's pocket", v: b[0]===0
+? "The black must drop in the pocket you called. Wrong pocket loses the frame."
+: "Any pocket is legal for the black." }
+],
+foul:[
+{ k:"Missing the black", v: b[1]===0
+? "A legal miss on the black ends your turn."
+: "A legal miss on the black ends that visit, not both." }
+]
+};
+}
+// Ball in hand anywhere leaves no snooker to relieve, so dial 2 follows dial 1.
+function constrain(b){ if(b[1]===0) b[2]=0; return b; }
+var state = {
+blend:3,
+bits:[0,0,0,0,0,0,0],
+locks:[false,false,false,false,false,false,false]
+};
+/* ---------- frame code ---------- */
+var ALPH = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
+function pack(b){ var n=0; for(var i=0;i<N;i++) n |= (b[i]?1:0)<<i; return n; }
+function unpack(n){ var b=[]; for(var i=0;i<N;i++) b.push((n>>i)&1); return b; }
+function two(n){ return ALPH[(n>>5)&31] + ALPH[n&31]; }
+function codeFor(b){ var n=pack(b); return "FRAME-" + two(n) + two((n*37+11)%1024); }
+function readCode(s){
+var t = String(s).toUpperCase().replace(/[^0-9A-Z]/g,"");
+if(t.indexOf("FRAME")===0) t = t.slice(5);
+if(t.length!==4) return {err:"A frame code is four characters, like FRAME-7K2Q."};
+for(var i=0;i<4;i++) if(ALPH.indexOf(t[i])<0)
+return {err:"That code has a character I don't use \u2014 check for 0 and O, or 1 and I."};
+var n = ALPH.indexOf(t[0])*32 + ALPH.indexOf(t[1]);
+var c = ALPH.indexOf(t[2])*32 + ALPH.indexOf(t[3]);
+if(n > (1<<N)-1 || c !== (n*37+11)%1024) return {err:"No frame with that code. Check it and try again."};
+return {bits:constrain(unpack(n))};
+}
+/* ---------- rolling ---------- */
+function pick(k, pool){
+var a = pool.slice(), out = [];
+while(out.length<k && a.length) out.push(a.splice(Math.floor(Math.random()*a.length),1)[0]);
+return out;
+}
+// After constrain() a forced rule can drop the count below the slider,
+// so top it back up on dials that are still free to move.
+function topUp(b, target, open){
+var guard = 0;
+while(guard++ < 12){
+var cnt = 0, i;
+for(i=0;i<N;i++) cnt += b[i];
+if(cnt >= target) break;
+var cands = [];
+for(i=0;i<open.length;i++){
+var d = open[i];
+if(b[d]===1) continue;
+if(d===2 && b[1]===0) continue;
+cands.push(d);
+}
+if(!cands.length) break;
+b[cands[Math.floor(Math.random()*cands.length)]] = 1;
+constrain(b);
+}
+return b;
+}
+function roll(){
+var i, open = [];
+for(i=0;i<N;i++) if(!state.locks[i]) open.push(i);
+var b = state.bits.slice();
+var lockedWepf = 0;
+for(i=0;i<N;i++) if(state.locks[i] && b[i]===1) lockedWepf++;
+var need = Math.max(0, Math.min(open.length, state.blend - lockedWepf));
+for(i=0;i<open.length;i++) b[open[i]] = 0;
+var hits = pick(need, open);
+for(i=0;i<hits.length;i++) b[hits[i]] = 1;
+state.bits = topUp(constrain(b), state.blend, open);
+}
+/* ---------- render ---------- */
+var elW = document.getElementById("clusterW");
+var elE = document.getElementById("clusterE");
+var elBoard = document.getElementById("board");
+var elVerdict = document.getElementById("verdict");
+var elTally = document.getElementById("tally");
+var elCode = document.getElementById("code");
+var elMsg = document.getElementById("codemsg");
+var elPrintCode = document.getElementById("printcode");
+var elBlendRead = document.getElementById("blendread");
+var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+function verdictFor(b){
+var p = [];
+p.push(b[0] ? "No calling" : "Call your pocket");
+p.push(b[1] ? "two visits" : "ball in hand");
+p.push(b[0] ? "any pocket for the black" : "the black in the pocket you called");
+p.push(b[2] ? "snooker relief is live" : "a snooker is just a snooker");
+return p.join(", ") + ".";
+}
+function jumpTo(id){
+var t = document.getElementById("rule-" + id);
+if(!t) return;
+t.scrollIntoView({behavior: reduce ? "auto" : "smooth", block:"center"});
+t.classList.add("flash");
+setTimeout(function(){ t.classList.remove("flash"); }, 900);
+}
+function drawString(animate){
+elW.innerHTML = ""; elE.innerHTML = "";
+var order = 0;
+DIALS.forEach(function(d,i){
+var v = state.bits[i];
+var bead = document.createElement("button");
+bead.type = "button";
+bead.className = "bead " + (v ? "e" : "w");
+if(state.locks[i]) bead.classList.add("pinned");
+if(i===2 && state.bits[1]===0) bead.classList.add("held");
+bead.setAttribute("aria-label", d.topic + ": " + (v ? "WEPF" : "WPA"));
+bead.title = d.topic;
+if(animate && !reduce){
+bead.classList.add("slide");
+bead.style.animationDelay = (order*55) + "ms";
+}
+bead.addEventListener("click", function(){ jumpTo(d.id); });
+(v ? elE : elW).appendChild(bead);
+order++;
+});
+}
+function drawBoard(){
+var kids = children(state.bits);
+elBoard.innerHTML = "";
+DIALS.forEach(function(d,i){
+var v = state.bits[i];
+var held = (i===2 && state.bits[1]===0);
+var row = document.createElement("div");
+row.className = "rule";
+row.id = "rule-" + d.id;
+var pin = document.createElement("button");
+pin.type = "button";
+pin.className = "pin";
+pin.textContent = state.locks[i] ? "\u25C6" : "\u25C7";
+pin.title = state.locks[i] ? "Pinned \u2014 re-rolls leave this alone" : "Pin this rule so re-rolls leave it alone";
+pin.setAttribute("aria-pressed", state.locks[i] ? "true" : "false");
+pin.setAttribute("aria-label", "Pin " + d.topic);
+if(held) pin.disabled = true;
+pin.addEventListener("click", function(){
+state.locks[i] = !state.locks[i];
+save(); drawBoard(); drawString(false);
+});
+var h = document.createElement("h3");
+h.textContent = d.topic;
+var body = document.createElement("div");
+body.className = "body";
+body.innerHTML = (v ? d.wepf : d.wpa) +
+'<span class="tag ' + (v?"e":"w") + '">' + (v?"WEPF":"WPA") + '</span>';
+if(held){
+var note = document.createElement("p");
+note.className = "held-note";
+note.textContent = "Ball in hand leaves nothing to relieve, so this one follows the fouls rule.";
+body.appendChild(note);
+}
+var kidList = d.id==="call" ? kids.call : (d.id==="foul" ? kids.foul : null);
+if(kidList){
+var wrap = document.createElement("div");
+wrap.className = "kid";
+kidList.forEach(function(k){
+var s = document.createElement("span");
+s.innerHTML = "<i>" + k.k + "</i> &mdash; " + k.v;
+wrap.appendChild(s);
+});
+body.appendChild(wrap);
+}
+row.appendChild(pin); row.appendChild(h); row.appendChild(body);
+elBoard.appendChild(row);
+});
+}
+function render(animate){
+drawString(animate);
+drawBoard();
+elVerdict.textContent = verdictFor(state.bits);
+var n=0; for(var i=0;i<N;i++) n+=state.bits[i];
+elTally.innerHTML = "<b>" + (N-n) + "</b> from WPA, <b>" + n + "</b> from WEPF";
+var code = codeFor(state.bits);
+elCode.value = code;
+elPrintCode.textContent = code;
+save();
+}
+/* ---------- storage ---------- */
+function save(){
+try{
+localStorage.setItem("btb1", JSON.stringify({
+blend:state.blend, bits:state.bits, locks:state.locks
+}));
+}catch(e){}
+}
+function load(){
+try{
+var raw = localStorage.getItem("btb1");
+if(!raw) return false;
+var s = JSON.parse(raw);
+if(!s || !Array.isArray(s.bits) || s.bits.length!==N) return false;
+state.blend = (typeof s.blend==="number" && s.blend>=0 && s.blend<=N) ? s.blend : 3;
+state.bits = constrain(s.bits.map(function(x){return x?1:0;}));
+if(Array.isArray(s.locks) && s.locks.length===N) state.locks = s.locks.map(function(x){return !!x;});
+return true;
+}catch(e){ return false; }
+}
+/* ---------- controls ---------- */
+function blendLabel(){
+var n = state.blend;
+if(n===0)   return "Straight WPA";
+if(n===N)   return "Straight WEPF";
+if(n===1)   return "WPA, with one rule from WEPF";
+if(n===N-1) return "WEPF, with one rule from WPA";
+return n + " of " + N + " rules from WEPF";
+}
+function syncControls(){
+document.getElementById("blend").value = state.blend;
+elBlendRead.textContent = blendLabel();
+document.getElementById("roll").textContent =
+(state.blend===0 || state.blend===N) ? "Set the frame" : "Roll the frame";
+}
+document.getElementById("blend").addEventListener("input", function(){
+state.blend = Number(this.value);
+syncControls(); roll(); render(false); elMsg.textContent = "";
+});
+document.getElementById("roll").addEventListener("click", function(){
+roll(); render(true); elMsg.textContent = "";
+});
+function applyCode(){
+var r = readCode(elCode.value);
+if(r.err){ elMsg.textContent = r.err; elCode.select(); return; }
+elMsg.textContent = "";
+state.bits = r.bits;
+render(true);
+}
+elCode.addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); applyCode(); } });
+elCode.addEventListener("blur", function(){ if(elCode.value.trim()) applyCode(); });
+elCode.addEventListener("focus", function(){ elCode.select(); });
+var restored = load();
+syncControls();
+if(!restored) roll();
+render(!restored);
+})();
+</script>
+</html>
