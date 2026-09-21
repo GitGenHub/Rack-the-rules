@@ -200,6 +200,48 @@ font-size:.59rem;letter-spacing:.14em;text-transform:uppercase;
 }
 footer a{color:var(--soft)}
 .print-only{display:none}
+/* ---------- comparison popup ---------- */
+.cmp-link{
+margin-top:12px;font:inherit;font-size:var(--s0);
+background:none;border:none;padding:0;cursor:pointer;
+color:var(--champagne);text-decoration:underline;
+text-decoration-color:var(--champagne-deep);text-underline-offset:3px;
+}
+.cmp-link:hover{color:var(--text);text-decoration-color:var(--text)}
+.cmp-row{
+margin-left:10px;font:inherit;font-size:.55rem;letter-spacing:.16em;
+text-transform:uppercase;font-weight:500;
+background:none;border:none;padding:2px 0;cursor:pointer;
+color:var(--dim);text-decoration:underline;text-underline-offset:3px;
+}
+.cmp-row:hover{color:var(--text)}
+/* The cheat sheet is dark-only, so the popup chrome stays dark in every theme. */
+.cmp{
+--bg:#191C22;--panel:#1E222A;--line:#333944;
+--text:#E4E3DF;--soft:#9BA1AD;--dim:#6C7482;
+color-scheme:dark;
+padding:0;margin:auto;
+border:1px solid var(--line);background:var(--bg);color:var(--text);
+width:min(1000px,calc(100vw - 32px));
+height:92vh;height:92dvh;
+max-width:100vw;max-height:100dvh;
+}
+.cmp[open]{display:flex;flex-direction:column}
+.cmp::backdrop{background:rgba(10,12,16,.72);backdrop-filter:blur(3px)}
+.cmp-bar{
+flex:0 0 auto;display:flex;align-items:center;gap:16px;
+padding:10px 12px 10px 16px;
+border-bottom:1px solid var(--line);background:var(--panel);
+}
+.cmp-bar .t{color:var(--dim);margin-right:auto}
+.cmp-bar a{color:var(--soft)}
+.cmp-close{
+font:inherit;font-size:var(--s0);padding:7px 16px;cursor:pointer;
+background:none;border:1px solid var(--line);color:var(--text);
+}
+.cmp-close:hover{border-color:var(--text)}
+.cmp iframe{flex:1;display:block;width:100%;border:0;background:#191C22}
+html.cmp-lock{overflow:hidden}
 @media (max-width:620px){
 .rule{grid-template-columns:30px 1fr;gap:0 10px;padding-right:14px}
 .rule h3{grid-column:2}
@@ -207,6 +249,10 @@ footer a{color:var(--soft)}
 .codebox{margin-left:0;width:100%}
 .codebox input{flex:1;width:auto}
 .spine dl > div{grid-template-columns:1fr;gap:3px}
+.cmp{width:100vw;height:100vh;height:100dvh;border:none;
+padding-bottom:env(safe-area-inset-bottom,0px)}
+.cmp-bar{padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.cmp-bar a{display:none}
 }
 @media (prefers-reduced-motion: reduce){ .bead.slide{animation:none} }
 @media print{
@@ -219,7 +265,7 @@ footer a{color:var(--soft)}
 }
 body{background:#fff;font-size:9pt}
 .sheet{padding:0;max-width:none}
-.controls,.tally,footer a,.pin{display:none !important}
+.controls,.tally,footer a,.pin,.cmp-link,.cmp-row,.cmp{display:none !important}
 .stage{border:none;padding:0 0 8px}
 .verdict{margin-top:16px}
 .rule{grid-template-columns:minmax(96px,120px) 1fr;padding-left:0}
@@ -230,6 +276,7 @@ body{background:#fff;font-size:9pt}
 <header class="masthead">
 <h1>Rack the Rules</h1>
 <p class="deck">Seven rules are all that separate WPA 8-Ball from WEPF World Rules. Line them up, settle them, then break.</p>
+<button type="button" class="cmp-link" id="cmp-all">See the full comparison</button>
 </header>
 <div class="controls">
 <div class="mixer">
@@ -271,11 +318,565 @@ body{background:#fff;font-size:9pt}
 <div><dt>Losing outright</dt><dd>The black too early, the black while fouling, or the black with your last colour.</dd></div>
 </dl>
 </section>
+<dialog class="cmp" id="cmp" aria-label="WPA 8-Ball versus WEPF World Rules, full comparison">
+<div class="cmp-bar">
+<span class="t lbl">Full comparison</span>
+<a class="lbl" id="cmp-own" href="wpa-vs-wepf-comparison.html" target="_blank" rel="noopener">Open on its own</a>
+<button type="button" class="cmp-close" id="cmp-close">Close</button>
+</div>
+<iframe id="cmp-frame" title="WPA 8-Ball versus WEPF World Rules"></iframe>
+</dialog>
 <footer>
 <span>Summary for players &mdash; the published rulebooks govern</span>
 <span>Sources: <a href="https://wpapool.com/rules-of-play/" target="_blank" rel="noopener">WPA</a> &middot; <a href="https://www.wepf.org/" target="_blank" rel="noopener">WEPF</a></span>
 </footer>
 </div>
+<script type="text/plain" id="sheet-src">
+<meta charset="utf-8">
+<title>Two Codes, One Black</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;0,6..96,600;1,6..96,400&family=Archivo:wght@400;500;600&display=swap">
+<style>
+:root{
+--bg:#191C22;
+--panel:#1E222A;
+--panel-2:#22262F;
+--line:#333944;
+--line-soft:#262B33;
+--text:#E4E3DF;
+--soft:#9BA1AD;
+--dim:#6C7482;
+--champagne:#D8C9A8;
+--champagne-deep:#6E6349;
+--rose:#C89098;
+--rose-deep:#6E4B50;
+--s0:.79rem;
+--s1:.86rem;
+--s2:1.12rem;
+--s3:clamp(1.35rem,2.4vw,1.7rem);
+--s4:clamp(2.1rem,5.4vw,3.4rem);
+color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+background:var(--bg);
+color:var(--text);
+font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+font-size:var(--s1);
+line-height:1.5;
+-webkit-font-smoothing:antialiased;
+}
+.sheet{
+max-width:1140px;
+margin:0 auto;
+padding-inline:16px;
+padding-block:clamp(26px,4.6vw,54px);
+}
+.lbl{
+font-size:.59rem;
+letter-spacing:.24em;
+text-transform:uppercase;
+font-weight:500;
+}
+/* ---------------- masthead ---------------- */
+.masthead{
+padding-bottom:18px;
+border-bottom:1px solid var(--line);
+}
+.kicker{color:var(--champagne);margin:0 0 14px}
+h1{
+font-family:"Bodoni Moda",Didot,"Times New Roman",serif;
+font-weight:400;
+font-size:var(--s4);
+line-height:1.02;
+letter-spacing:-.012em;
+margin:0;
+text-wrap:balance;
+}
+h1 em{
+font-style:italic;
+font-weight:400;
+color:var(--dim);
+font-size:.44em;
+padding-inline:.3em;
+vertical-align:.14em;
+}
+.deck{
+margin:18px 0 0;
+padding-top:14px;
+border-top:1px solid var(--line-soft);
+font-size:var(--s0);
+color:var(--soft);
+}
+.deck .g{
+font-family:"Bodoni Moda",serif;
+color:var(--text);
+padding-inline:.12em;
+}
+/* ---------------- ball marks ---------------- */
+.bm{
+display:inline-block;
+width:13px;height:13px;border-radius:50%;
+position:relative;overflow:hidden;vertical-align:-1px;
+box-shadow:inset 0 -2px 4px rgba(0,0,0,.5);
+background-image:radial-gradient(circle at 34% 27%, rgba(255,255,255,.6), rgba(255,255,255,0) 50%);
+}
+.bm-solid{background-color:#3A6EA5}
+.bm-stripe{background-color:#DCD8CE}
+.bm-stripe::before{content:"";position:absolute;inset:34% 0;background:#A85448}
+.bm-red{background-color:#A85448}
+.bm-yellow{background-color:#C2A153}
+/* ---------------- comparison ---------------- */
+.board{
+margin-top:clamp(22px,3.6vw,36px);
+border:1px solid var(--line);
+background:var(--panel);
+}
+.grid{
+display:grid;
+grid-template-columns:minmax(142px,.82fr) 1fr 34px 1fr;
+}
+.row{display:contents}
+.grid > .row > *{
+padding:9px 0;
+border-bottom:1px solid var(--line-soft);
+font-size:var(--s0);
+line-height:1.4;
+}
+.grid > .row:last-child > *{border-bottom:none}
+.c-topic{
+padding-left:18px !important;
+padding-right:14px !important;
+font-size:.655rem !important;
+letter-spacing:.09em;
+text-transform:uppercase;
+font-weight:500;
+color:var(--text);
+}
+.c-wpa,.c-wepf{color:var(--soft)}
+.c-wpa{padding-right:8px !important;padding-left:14px !important}
+.c-wepf{padding-left:8px !important;padding-right:18px !important}
+/* emphasis: weight only, never hue */
+.c-wpa b,.c-wepf b{font-weight:600;color:var(--text)}
+.gut{
+text-align:center;
+color:var(--champagne-deep);
+font-size:1.12rem;
+font-weight:600;
+line-height:1.3;
+}
+.row.diff .gut{color:var(--rose)}
+/* header plates */
+.head > *{
+position:sticky;
+top:env(safe-area-inset-top,0px);
+z-index:2;
+background:var(--panel-2);
+border-bottom:1px solid var(--line) !important;
+padding-top:13px !important;
+padding-bottom:12px !important;
+}
+.head .c-topic{color:var(--dim) !important;font-weight:500}
+.head .plate{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.head .h{
+font-family:"Bodoni Moda",Didot,serif;
+font-weight:600;
+font-size:var(--s2);
+line-height:1;
+margin:0;
+letter-spacing:-.005em;
+}
+.head .c-wpa .h{color:var(--champagne)}
+.head .c-wepf .h{color:var(--rose)}
+.head .c-wpa{box-shadow:inset 0 2px 0 var(--champagne-deep)}
+.head .c-wepf{box-shadow:inset 0 2px 0 var(--rose-deep)}
+/* the three ways to lose outright, gathered into one row */
+.row.outright .c-topic{
+box-shadow:inset 2px 0 0 var(--dim);
+}
+.cases{
+display:flex;
+flex-direction:column;
+gap:1px;
+margin-top:5px;
+font-size:.7rem;
+letter-spacing:0;
+text-transform:none;
+font-weight:400;
+color:var(--soft);
+}
+.cases span{display:flex;gap:7px;align-items:baseline}
+.cases span::before{content:"\2014";color:var(--dim);flex:0 0 auto}
+.legend{
+display:flex;flex-wrap:wrap;gap:8px 28px;
+margin-top:12px;color:var(--dim);
+}
+.legend i{font-style:normal;font-weight:600;padding-right:4px}
+.legend .eq{color:var(--champagne-deep)}
+.legend .ne{color:var(--rose)}
+/* ---------------- note panels ---------------- */
+.panels{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(310px,1fr));
+gap:18px;
+margin-top:28px;
+}
+.panel{
+background:var(--panel);
+border:1px solid var(--line);
+padding:20px 20px 22px;
+}
+.panel.wpa{box-shadow:inset 0 2px 0 var(--champagne-deep)}
+.panel.wepf{box-shadow:inset 0 2px 0 var(--rose-deep)}
+h2{
+font-family:"Bodoni Moda",Didot,serif;
+font-weight:500;
+font-size:var(--s3);
+line-height:1.05;
+letter-spacing:-.01em;
+margin:0 0 16px;
+}
+.panel.wpa h2{color:var(--champagne)}
+.panel.wepf h2{color:var(--rose)}
+dl{margin:0;display:flex;flex-direction:column;gap:11px}
+dl > div{
+display:grid;
+grid-template-columns:minmax(86px,104px) 1fr;
+gap:14px;
+align-items:baseline;
+padding-bottom:11px;
+border-bottom:1px solid var(--line-soft);
+}
+dl > div:last-child{border-bottom:none;padding-bottom:0}
+dt{
+color:var(--text);font-weight:500;
+font-size:.59rem;letter-spacing:.14em;text-transform:uppercase;
+}
+dd{margin:0;font-size:var(--s0);color:var(--soft)}
+dd b{font-weight:600;color:var(--text)}
+dl > div.stack{grid-template-columns:1fr;align-items:start;gap:7px}
+.subnotes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.subnotes li{font-size:var(--s0);color:var(--soft);line-height:1.42}
+.subnotes b{font-weight:600;color:var(--text)}
+.ref{
+display:block;
+margin-top:4px;
+font-size:.63rem;
+font-style:italic;
+letter-spacing:.02em;
+color:var(--dim);
+}
+/* ---------------- pub note ---------------- */
+.pub{
+margin-top:18px;
+background:var(--panel);
+border:1px solid var(--line);
+box-shadow:inset 0 2px 0 var(--line);
+padding:20px 20px 22px;
+}
+.pub h2{color:var(--text)}
+.pub > p{margin:0;font-size:var(--s0);color:var(--soft)}
+.tells{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+gap:16px;
+margin:16px 0 18px;
+}
+.tell{border-top:1px solid var(--line);padding-top:12px}
+.tell q{
+display:block;
+font-family:"Bodoni Moda",Didot,serif;
+font-style:italic;font-weight:400;
+font-size:1.24rem;line-height:1.18;
+color:var(--text);
+quotes:'\201C' '\201D';
+margin-bottom:10px;
+}
+.tell .cue{display:block;color:var(--dim);margin-bottom:3px}
+.tell .who{
+display:block;
+font-family:"Bodoni Moda",Didot,serif;
+font-weight:600;font-size:1rem;line-height:1.1;
+}
+.tell:nth-child(1) .who{color:var(--champagne)}
+.tell:nth-child(2) .who{color:var(--rose)}
+.tell:nth-child(3) .who{color:var(--text)}
+footer{
+margin-top:26px;padding-top:14px;
+border-top:1px solid var(--line);
+display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:space-between;
+color:var(--dim);
+}
+footer a{color:var(--champagne);text-decoration:none;border-bottom:1px solid var(--champagne-deep)}
+footer a:hover{color:var(--text)}
+a:focus-visible{outline:2px solid var(--champagne);outline-offset:3px}
+/* ---------------- narrow ---------------- */
+@media (max-width:780px){
+.grid{display:block}
+.row{display:block;border-bottom:1px solid var(--line)}
+.grid > .row > *{border-bottom:none;padding:5px 16px}
+.c-topic{
+padding:12px 16px 4px !important;
+background:var(--panel-2);
+font-size:.62rem !important;
+}
+.c-wpa,.c-wepf{padding-left:16px !important;padding-right:16px !important}
+.c-wepf{padding-bottom:13px !important}
+.c-wpa::before,.c-wepf::before{
+font-size:.55rem;font-weight:600;letter-spacing:.2em;
+display:block;margin-bottom:1px;
+}
+.c-wpa::before{content:"WPA";color:var(--champagne)}
+.c-wepf::before{content:"WEPF";color:var(--rose)}
+.gut{
+display:block;text-align:left;
+padding:2px 16px !important;
+font-size:.92rem;
+}
+.head{display:none}
+dl > div{grid-template-columns:1fr;gap:3px}
+}
+@media print{
+:root{
+--bg:#fff;--panel:#fff;--panel-2:#fff;
+--line:#b8b8b8;--line-soft:#e2e2e2;
+--text:#111;--soft:#3a3a3a;--dim:#767676;
+--champagne:#7A6836;--champagne-deep:#b9ad8e;
+--rose:#8A5259;--rose-deep:#c4a4a8;
+}
+body{background:#fff;font-size:8pt}
+.sheet{padding-block:0;max-width:none}
+.head > *{position:static}
+.panels{gap:12px;margin-top:16px}
+.tell q{font-size:1rem}
+}
+</style>
+<div class="sheet">
+<header class="masthead">
+<p class="kicker lbl">One-page quick comparison</p>
+<h1>WPA 8-Ball <em>versus</em> WEPF World Rules</h1>
+<p class="deck">Same table, same black ball, two different rulebooks. A <span class="g">&#8800;</span> in the centre column marks a real difference; an <span class="g">=</span> marks the same rule wearing different vocabulary.</p>
+</header>
+<div class="board">
+<div class="grid">
+<div class="row head">
+<div class="c-topic lbl">Topic</div>
+<div class="c-wpa">
+<div class="plate">
+<p class="h">WPA 8-Ball</p>
+<span aria-hidden="true"><i class="bm bm-solid"></i> <i class="bm bm-stripe"></i></span>
+</div>
+</div>
+<div class="gut"></div>
+<div class="c-wepf">
+<div class="plate">
+<p class="h">WEPF World Rules</p>
+<span aria-hidden="true"><i class="bm bm-red"></i> <i class="bm bm-yellow"></i></span>
+</div>
+</div>
+</div>
+<div class="row diff">
+<div class="c-topic">Ball groups</div>
+<div class="c-wpa"><b>Solids &amp; stripes</b></div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf"><b>Reds &amp; yellows</b></div>
+</div>
+<div class="row diff">
+<div class="c-topic">Objective</div>
+<div class="c-wpa">Clear your group, then pocket the 8-ball</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf">Clear your colour, then pocket the 8-ball on a <b>separate shot</b></div>
+</div>
+<div class="row diff">
+<div class="c-topic">Call shots</div>
+<div class="c-wpa"><b>Yes</b> &mdash; call ball + pocket</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf"><b>No</b> ball-and-pocket calling</div>
+</div>
+<div class="row diff">
+<div class="c-topic">Open table</div>
+<div class="c-wpa">First legal <b>called</b> ball determines the group</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf">Colours established through legal pots and, in some situations, <b>nominations</b></div>
+</div>
+<div class="row same">
+<div class="c-topic">Legal break</div>
+<div class="c-wpa">Pocket a ball <b>or</b> drive 4 balls to rails</div>
+<div class="gut">=</div>
+<div class="c-wepf">Pocket a colour <b>or</b> drive 4 object balls to cushions</div>
+</div>
+<div class="row diff">
+<div class="c-topic">Illegal break</div>
+<div class="c-wpa">Incoming player chooses from the break options</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf">Re-rack; opponent restarts with <b>2 visits</b></div>
+</div>
+<div class="row diff">
+<div class="c-topic">8-ball on the break</div>
+<div class="c-wpa">Spot and continue, <b>or</b> re-break</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf">Re-rack; the <b>same player</b> breaks again</div>
+</div>
+<div class="row same">
+<div class="c-topic">Legal shot</div>
+<div class="c-wpa">Hit a legal ball first, then pocket a ball or reach a rail</div>
+<div class="gut">=</div>
+<div class="c-wepf">Hit a ball &ldquo;on&rdquo; first, then pocket a ball &ldquo;on&rdquo; or reach a cushion</div>
+</div>
+<div class="row diff">
+<div class="c-topic">Standard foul</div>
+<div class="c-wpa"><b>Ball-in-hand</b> anywhere</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf"><b>2 visits</b></div>
+</div>
+<div class="row diff">
+<div class="c-topic">Scratch</div>
+<div class="c-wpa"><b>Ball-in-hand</b> anywhere</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf"><b>2 visits</b></div>
+</div>
+<div class="row diff">
+<div class="c-topic">Pot opponent&rsquo;s ball</div>
+<div class="c-wpa">Depends on the legality of the shot</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf">Standard foul, except when a nominated ball is permitted after a foul snooker</div>
+</div>
+<div class="row diff">
+<div class="c-topic">Object ball off table</div>
+<div class="c-wpa">Foul; the ball <b>stays off</b> the table</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf">Foul; the object ball is <b>spotted</b></div>
+</div>
+<div class="row diff">
+<div class="c-topic">Ball touching cue ball or rail / cushion</div>
+<div class="c-wpa">A frozen legal ball may often be played <b>directly</b></div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf">Must play <b>away</b> from the touching ball</div>
+</div>
+<div class="row diff">
+<div class="c-topic">Snookers</div>
+<div class="c-wpa">Snookers exist but provide <b>no special relief</b></div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf">Additional <b>Total Snooker</b>, <b>Foul Snooker</b> and <b>Foul Jaw Snooker</b> rules<span class="ref">See notes below</span></div>
+</div>
+<div class="row diff">
+<div class="c-topic">Miss the 8-ball legally</div>
+<div class="c-wpa">Turn ends</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf">Current <b>visit</b> ends</div>
+</div>
+<div class="row same outright">
+<div class="c-topic">
+Pot the 8-ball
+<span class="cases">
+<span>too early</span>
+<span>while fouling</span>
+<span>with your last group ball</span>
+</span>
+</div>
+<div class="c-wpa">Lose the rack &mdash; <b>game over</b></div>
+<div class="gut">=</div>
+<div class="c-wepf">Lose the frame &mdash; <b>game over</b></div>
+</div>
+<div class="row diff">
+<div class="c-topic">Wrong pocket for the 8-ball</div>
+<div class="c-wpa">Lose the rack &mdash; <b>game over</b></div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf"><b>Any pocket is legal</b></div>
+</div>
+<div class="row diff">
+<div class="c-topic">Stalemate</div>
+<div class="c-wpa">If no progress can be made, re-rack and the original breaker breaks again</div>
+<div class="gut">&#8800;</div>
+<div class="c-wepf">If both players have 3 successive turns without the cue ball contacting an object ball, replay the frame and the same player breaks again</div>
+</div>
+</div>
+</div>
+<div class="legend lbl">
+<span><i class="ne">&#8800;</i> genuine difference</span>
+<span><i class="eq">=</i> same rule, different vocabulary</span>
+<span><i>&#9475;</i> ruled edge marks the three ways to lose outright</span>
+</div>
+<div class="panels">
+<section class="panel wpa">
+<h2>WPA in four notes</h2>
+<dl>
+<div>
+<dt>Ball-in-hand</dt>
+<dd>After most fouls the incoming player gets the cue ball <b>anywhere on the table</b>.</dd>
+</div>
+<div>
+<dt>Call shots</dt>
+<dd>Call the ball and the pocket. Rails, banks, kisses and paths <b>do not</b> need to be called.</dd>
+</div>
+<div>
+<dt>The 8-ball</dt>
+<dd>Must go in the <b>called pocket</b>. Early 8-ball, wrong pocket, or fouling while pocketing it &mdash; game over.</dd>
+</div>
+<div>
+<dt>Stalemate</dt>
+<dd>If no progress can be made toward a conclusion, the rack is replayed and the <b>original breaker</b> breaks again.</dd>
+</div>
+</dl>
+</section>
+<section class="panel wepf">
+<h2>WEPF in four notes</h2>
+<dl>
+<div>
+<dt>Two visits</dt>
+<dd>A visit is not a shot. After a foul you get <b>Visit 1 + Visit 2</b>.</dd>
+</div>
+<div>
+<dt>Nominations</dt>
+<dd>No ball-and-pocket calling, but certain situations require nominating a <b>colour or ball</b>.</dd>
+</div>
+<div>
+<dt>Snooker</dt>
+<dd>
+<ul class="subnotes">
+<li><b>Ordinary</b> &mdash; no path to a legal ball. No relief.</li>
+<li><b>Total</b> &mdash; no path to any ball. Legal contact alone satisfies the shot.</li>
+<li><b>Foul</b> &mdash; caused by the opponent&rsquo;s foul. Play on, or from baulk with a nominated ball.</li>
+<li><b>Foul jaw</b> &mdash; a foul snooker from a jaw obstruction. Same options apply.</li>
+</ul>
+</dd>
+</div>
+<div>
+<dt>Stalemate</dt>
+<dd>WPA uses referee judgement; WEPF uses a specific <b>three-turn test</b>.</dd>
+</div>
+</dl>
+</section>
+</div>
+<section class="pub">
+<h2>The UK pub pool tell</h2>
+<div class="tells">
+<div class="tell">
+<q>Ball in hand anywhere</q>
+<span class="cue lbl">They&rsquo;re playing</span>
+<span class="who">WPA 8-Ball</span>
+</div>
+<div class="tell">
+<q>Two visits</q>
+<span class="cue lbl">They&rsquo;re playing</span>
+<span class="who">WEPF World Rules</span>
+</div>
+<div class="tell">
+<q>Free shot</q>
+<span class="cue lbl">They&rsquo;re playing</span>
+<span class="who">Blackball</span>
+</div>
+</div>
+<p>Many traditional UK pub leagues historically used rules very close to the WEPF World Rules above. Blackball is generally closer to WEPF than to WPA 8-Ball, but replaces the classic two-visits penalty with a free-shot penalty.</p>
+</section>
+<footer class="lbl">
+<span>Summary for players &mdash; the published rulebooks govern</span>
+<span>Sources: <a href="https://wpapool.com/rules-of-play/" target="_blank" rel="noopener">WPA</a> &middot; <a href="https://www.wepf.org/" target="_blank" rel="noopener">WEPF</a></span>
+</footer>
+</div>
+</script>
 <script>
 (function(){
 "use strict";
@@ -458,6 +1059,13 @@ var body = document.createElement("div");
 body.className = "body";
 body.innerHTML = (v ? d.wepf : d.wpa) +
 '<span class="tag ' + (v?"e":"w") + '">' + (v?"WEPF":"WPA") + '</span>';
+var cmpBtn = document.createElement("button");
+cmpBtn.type = "button";
+cmpBtn.className = "cmp-row";
+cmpBtn.textContent = "Compare";
+cmpBtn.setAttribute("aria-label", "Compare " + d.topic + " side by side");
+cmpBtn.addEventListener("click", function(){ openCmp(d.id); });
+body.appendChild(cmpBtn);
 if(held){
 var note = document.createElement("p");
 note.className = "held-note";
@@ -542,6 +1150,72 @@ render(true);
 elCode.addEventListener("keydown", function(e){ if(e.key==="Enter"){ e.preventDefault(); applyCode(); } });
 elCode.addEventListener("blur", function(){ if(elCode.value.trim()) applyCode(); });
 elCode.addEventListener("focus", function(){ elCode.select(); });
+/* ---------- comparison popup ---------- */
+// Each rule points at its row in the cheat sheet, plus the rows that follow from it.
+var CMP_ROWS = {
+call:["Call shots","Open table","Wrong pocket for the 8-ball"],
+foul:["Standard foul","Scratch","Pot opponent","Miss the 8-ball legally"],
+snooker:["Snookers"],
+breakblack:["8-ball on the break"],
+illegalbreak:["Illegal break"],
+offtable:["Object ball off table"],
+frozen:["Ball touching cue ball"]
+};
+var SHEET_URL = "wpa-vs-wepf-comparison.html";
+var cmp = document.getElementById("cmp");
+var frame = document.getElementById("cmp-frame");
+var embedded = document.getElementById("sheet-src");
+var sheetState = 0, pending = null;   // 0 not loaded, 1 loading, 2 ready
+if(embedded) document.getElementById("cmp-own").hidden = true;
+function frameDoc(){ try{ return frame.contentDocument; }catch(e){ return null; } }
+function focusRows(id){
+var doc = frameDoc();
+if(!doc || !doc.body) return;
+if(!doc.getElementById("rtr-hit")){
+var st = doc.createElement("style");
+st.id = "rtr-hit";
+st.textContent =
+".row.rtr-hit>div{background:rgba(200,144,152,.14) !important}" +
+".row.rtr-hit>.c-topic{box-shadow:inset 3px 0 0 #C89098}";
+(doc.head || doc.documentElement).appendChild(st);
+}
+Array.prototype.forEach.call(doc.querySelectorAll(".row.rtr-hit"), function(r){ r.classList.remove("rtr-hit"); });
+var scroller = doc.scrollingElement || doc.documentElement;
+if(!id){ scroller.scrollTop = 0; return; }
+var want = CMP_ROWS[id] || [], first = null;
+Array.prototype.forEach.call(doc.querySelectorAll(".row .c-topic"), function(cell){
+var txt = cell.textContent.replace(/\s+/g," ").trim();
+for(var k=0;k<want.length;k++){
+if(txt.indexOf(want[k])===0){
+cell.parentNode.classList.add("rtr-hit");
+if(!first) first = cell;
+break;
+}
+}
+});
+// Rows are display:contents on wide screens, so scroll to the cell, not the row.
+if(first) first.scrollIntoView({block:"center"});
+}
+function openCmp(id){
+document.documentElement.classList.add("cmp-lock");
+if(typeof cmp.showModal === "function"){ if(!cmp.open) cmp.showModal(); }
+else cmp.setAttribute("open","");
+if(sheetState===2){ requestAnimationFrame(function(){ focusRows(id); }); return; }
+pending = id;
+if(sheetState===1) return;
+sheetState = 1;
+frame.addEventListener("load", function(){ sheetState = 2; focusRows(pending); }, {once:true});
+if(embedded) frame.srcdoc = embedded.textContent;
+else frame.src = SHEET_URL;
+}
+function closeCmp(){
+if(cmp.open && typeof cmp.close === "function") cmp.close();
+else { cmp.removeAttribute("open"); document.documentElement.classList.remove("cmp-lock"); }
+}
+cmp.addEventListener("close", function(){ document.documentElement.classList.remove("cmp-lock"); });
+cmp.addEventListener("click", function(e){ if(e.target===cmp) closeCmp(); });
+document.getElementById("cmp-close").addEventListener("click", closeCmp);
+document.getElementById("cmp-all").addEventListener("click", function(){ openCmp(null); });
 var restored = load();
 syncControls();
 if(!restored) roll();
